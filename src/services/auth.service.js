@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { generateOTP } from "../utils/utils.js";
 import eventBus from "../core/eventEmitter.js";
 import { EVENTS } from "../core/events.js";
+
 class AuthService {
   // ================= REGISTER =================
   async register(body) {
