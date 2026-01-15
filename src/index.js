@@ -1,5 +1,5 @@
 // Package Imports
-import https from "https";
+import http from "http";
 import app from "./app.js";
 
 // Custom Imports
@@ -8,7 +8,7 @@ import logger from "./utils/log.js";
 import { connectDB } from "./core/db.js";
 
 // Create HTTPS server
-const server = https.createServer(app);
+const server = http.createServer(app);
 
 // Start server
 server.listen(config.PORT, async() => {

@@ -23,23 +23,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+
 // Routing
 routes(app);
-
-import responser from "./utils/responser.js";
-import catchAsync from "./utils/error/catchError.js";
-import logger from "./utils/log.js";
-
-const getDataApi = async (req, res) => {
-  const data = {
-    projectName: 'shenton',
-    backend: 'nodeJs'
-  }
-  logger.info(JSON.stringify(data));
-  return responser.send(200, "auth", "A_S002", req, res, data);
-}
-
-app.get("/", catchAsync(getDataApi))
 
 app.use(globalErrorHandler);
 
