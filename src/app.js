@@ -28,7 +28,7 @@ routes(app);
 
 import responser from "./utils/responser.js";
 import catchAsync from "./utils/error/catchError.js";
-import logger from "./utils/logger.js";
+import logger from "./utils/log.js";
 
 const getDataApi = async (req, res) => {
   const data = {

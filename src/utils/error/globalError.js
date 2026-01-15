@@ -1,6 +1,6 @@
 // Custom Imports
 import responser from "../responser.js";
-import logger from "../logger.js";
+import logger from "../log.js";
 
 const sendError = (err, req, res) => {
   // Operational, trusted error: send message to client
