@@ -1,0 +1,8 @@
+{
+    "en": {
+        "E_S001": "Successfully encrypted data!",
+        "E_S002": "Successfully decrypted data!",
+        "E_E001": "Required decrypted text!",
+        "E_E002": "Required ecrypted text!"
+    }
+}
