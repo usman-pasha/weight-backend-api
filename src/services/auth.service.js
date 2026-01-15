@@ -5,9 +5,9 @@ import userService from "./user.service.js";
 import { signToken, hashPassword, compareHashPassword } from "../middlewares/token.js";
 import * as tokenSerice from "./token.service.js"
 import { v4 as uuidv4 } from 'uuid';
-
 import { generateOTP } from "../utils/utils.js";
-
+import eventBus from "../core/eventEmitter.js";
+import { EVENTS } from "../core/events.js";
 class AuthService {
   // ================= REGISTER =================
   async register(body) {
@@ -50,7 +50,13 @@ class AuthService {
     if (body.lastName) payload.lastName = body.lastName
 
     const user = await userService.createRecord(payload);
-
+    // event bus
+    eventBus.emit(EVENTS.USER_REGISTER, {
+      userId: user.id,
+      source: "system",
+      email:user.email,
+      timestamp: new Date()
+    });
     return {
       id: user.id,
       email: user.email,
@@ -166,8 +172,8 @@ class AuthService {
     if (!isPasswordValid) {
       throw new AppError(401, "auth", "A_E009");
     }
-    console.log("user",user);
-    
+    console.log("user", user);
+
     const record = await tokenSerice.createLogin(user);
     return record
   }

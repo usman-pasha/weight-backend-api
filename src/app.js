@@ -5,6 +5,7 @@ import cors from "cors";
 // Custom Imports
 import routes from "./routes/index.js";
 import globalErrorHandler from "./utils/error/globalError.js";
+import {} from "./listeners/index.js";
 
 const app = express();
 app.use(express.json({ limit: "20mb" }));
@@ -22,7 +23,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 
 // Routing
 routes(app);
