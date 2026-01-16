@@ -50,7 +50,7 @@ class AuthController {
   }
 
   // STEP 1: Redirect to Google
-  googleLogin(req, res) {
+  async googleLogin(req, res) {
     const params = new URLSearchParams({
       client_id: process.env.GOOGLE_CLIENT_ID,
       redirect_uri: process.env.CALLBACK_URL,
@@ -63,22 +63,20 @@ class AuthController {
     const googleUrl =
       "https://accounts.google.com/o/oauth2/v2/auth?" +
       params.toString();
-
     return res.redirect(googleUrl);
   }
 
   // STEP 2: Google callback
   async googleCallback(req, res, next) {
-    try {
-      const data = await authService.googleAuth(req.query.code);
-      return res.status(200).json({
-        status: true,
-        message: "Google login successful",
-        data,
-      });
-    } catch (err) {
-      next(err);
-    }
+    const data = await authService.googleAuth(req.query.code);
+    return responser.send(
+      200,
+      "auth",
+      "A_S006",
+      req,
+      res,
+      data
+    );
   }
 }
 

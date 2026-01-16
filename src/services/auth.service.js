@@ -208,6 +208,7 @@ class AuthService {
     };
   }
 
+  // ================= Login/Register google =================
   async googleAuth(code) {
     if (!code) {
       throw new AppError(400, "auth", "A_E001");
@@ -238,7 +239,6 @@ class AuthService {
     });
 
     const googleUser = ticket.getPayload();
-    console.log("g", googleUser)
 
     if (!googleUser?.email) {
       throw new AppError(401, "auth", "A_E011");
@@ -266,17 +266,14 @@ class AuthService {
           authProvider: "google",
           firstName: given_name,
           lastName: family_name,
-          emailIsVerified: true, // Google emails are verified
+          emailIsVerified: true,
           status: "active",
           profilePicture: picture
         },
       });
 
     }
-
-    // 4️⃣ Create session using token service (UNIFIED LOGIN ✅)
     const record = await tokenSerice.createLogin(user);
-
     return record;
   }
 
