@@ -13,6 +13,9 @@ const config = {
   CLOUD_NAME: process.env.CLOUD_NAME,
   IMAGE_API_KEY: process.env.IMAGE_API_KEY,
   IMAGE_API_SECRET: process.env.IMAGE_API_SECRET,
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  CALLBACK_URL: process.env.CALLBACK_URL
 };
 
 export default config;

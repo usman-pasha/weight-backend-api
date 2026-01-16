@@ -25,14 +25,15 @@ export const createLogin = async (user, ip = null) => {
   });
 
   return {
+    id: user.id,
     totalLogin,
-    token: token.jwtToken,
-    refreshToken: token.refreshToken,
     email: user.email,
     phoneNumber: user.phoneNumber,
     username: user.username,
     accountType: user.accountType,
-    id: user.id,
+    profilePicture: user.profilePicture,
+    token: token.jwtToken,
+    refreshToken: token.refreshToken,
   };
 };
 

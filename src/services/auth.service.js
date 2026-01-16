@@ -8,6 +8,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { generateOTP } from "../utils/utils.js";
 import eventBus from "../core/eventEmitter.js";
 import { EVENTS } from "../core/events.js";
+import axios from "axios";
+import { OAuth2Client } from "google-auth-library";
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 class AuthService {
   // ================= REGISTER =================
@@ -45,6 +49,7 @@ class AuthService {
       phoneOtpExpiry: new Date(Date.now() + 5 * 60 * 1000),
       emailOtpExpiry: new Date(Date.now() + 5 * 60 * 1000),
       status: "active",
+      authProvider: "local"
     };
 
     if (body.firstName) payload.firstName = body.firstName
@@ -55,7 +60,7 @@ class AuthService {
     eventBus.emit(EVENTS.USER_REGISTER, {
       userId: user.id,
       source: "system",
-      email:user.email,
+      email: user.email,
       timestamp: new Date()
     });
     return {
@@ -202,6 +207,79 @@ class AuthService {
       phoneNumber: user.phoneNumber,
     };
   }
+
+  async googleAuth(code) {
+    if (!code) {
+      throw new AppError(400, "auth", "A_E001");
+    }
+
+    // 1️⃣ Exchange authorization code for Google tokens
+    const tokenRes = await axios.post(
+      "https://oauth2.googleapis.com/token",
+      {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.CALLBACK_URL,
+        grant_type: "authorization_code",
+      }
+    );
+
+    const { id_token } = tokenRes.data;
+
+    if (!id_token) {
+      throw new AppError(401, "auth", "A_E011");
+    }
+
+    // 2️⃣ VERIFY Google ID token (SECURE ✅)
+    const ticket = await googleClient.verifyIdToken({
+      idToken: id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const googleUser = ticket.getPayload();
+    console.log("g", googleUser)
+
+    if (!googleUser?.email) {
+      throw new AppError(401, "auth", "A_E011");
+    }
+
+    const {
+      sub: googleId,
+      email,
+      given_name,
+      family_name,
+      picture
+    } = googleUser;
+
+    // 3️⃣ Find or create user
+    let user = await prisma.user.findFirst({
+      where: { email },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email,
+          googleId,
+          username: `GU${Date.now()}`,
+          authProvider: "google",
+          firstName: given_name,
+          lastName: family_name,
+          emailIsVerified: true, // Google emails are verified
+          status: "active",
+          profilePicture: picture
+        },
+      });
+
+    }
+
+    // 4️⃣ Create session using token service (UNIFIED LOGIN ✅)
+    const record = await tokenSerice.createLogin(user);
+
+    return record;
+  }
+
 }
 
 export default new AuthService();

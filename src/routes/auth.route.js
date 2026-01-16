@@ -10,4 +10,7 @@ authRoute.route("/validateOTP").post(catchError(authController.validatePhoneOTP)
 authRoute.route("/resendOtp").post(catchError(authController.resentOTP));
 authRoute.route("/login").post(catchError(authController.login));
 
+authRoute.get("/google", authController.googleLogin);
+authRoute.get("/google/callback", authController.googleCallback);
+
 export default authRoute;

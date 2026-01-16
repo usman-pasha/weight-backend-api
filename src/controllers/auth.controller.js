@@ -48,6 +48,38 @@ class AuthController {
       data
     );
   }
+
+  // STEP 1: Redirect to Google
+  googleLogin(req, res) {
+    const params = new URLSearchParams({
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      redirect_uri: process.env.CALLBACK_URL,
+      response_type: "code",
+      scope: "openid email profile",
+      access_type: "offline",
+      prompt: "consent",
+    });
+
+    const googleUrl =
+      "https://accounts.google.com/o/oauth2/v2/auth?" +
+      params.toString();
+
+    return res.redirect(googleUrl);
+  }
+
+  // STEP 2: Google callback
+  async googleCallback(req, res, next) {
+    try {
+      const data = await authService.googleAuth(req.query.code);
+      return res.status(200).json({
+        status: true,
+        message: "Google login successful",
+        data,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default new AuthController();
